@@ -1,0 +1,14 @@
+spring:
+  datasource:
+   driver-class-name: org.postgresql.Driver
+   url: jdbc:postgresql://localhost:5432/blogmystory
+   username: postgres
+   password: Ybrbnf5926603
+  jpa:
+   show-sql: true
+   generate-ddl=: false
+   hibernate:
+     ddl-auto: update
+   database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+server:
+  port: 8080
