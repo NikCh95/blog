@@ -1,6 +1,5 @@
 package com.myblogstory.blog.restcontroller;
 
-import com.myblogstory.blog.model.Role;
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Контроллер для регистрации и авторизации пользователя
@@ -30,13 +27,9 @@ public class UserController {
      * @param user
      * @return
      */
-    @PostMapping()
+    @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public User addEmployee(@RequestBody @Valid User user) {
-        user = new User();
-        Set<Role> role = new HashSet<>();
-        user.setUserName(user.getUserName());
-        user.setEmail(user.getEmail());
         return userServiceImpl.saveUser(user);
 //        public UserDto addEmployee(@RequestBody @Valid UserDto userDto) {
 //            return userServiceImpl.saveUser(userDto);
@@ -44,7 +37,6 @@ public class UserController {
 
     /**
      * Найти всех пользователей
-     * @return
      */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -55,7 +47,6 @@ public class UserController {
     /**
      * Найти пользователя по id
      * @param id
-     * @return
      */
     @GetMapping("/{id}")
     public User getByUserId(@PathVariable("id") Long id) {
@@ -65,7 +56,6 @@ public class UserController {
     /**
      * Удалить пользователя
      * @param id
-     * @return
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) {

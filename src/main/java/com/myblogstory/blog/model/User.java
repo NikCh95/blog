@@ -38,19 +38,19 @@ public class User {
     @Size(min = 4)
     private String password;
 
-    /**
-     * Пароль для сверка с веденным паролем
-     */
-    @NotEmpty
-    @Transient
-    private String passwordConfirm;
+//    /**
+//     * Пароль для сверка с веденным паролем
+//     */
+//    @NotEmpty
+//    @Transient
+//    private String passwordConfirm;
 
     /**
      * email пользователя
      */
     private String email;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
