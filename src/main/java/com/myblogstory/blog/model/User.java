@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
@@ -37,14 +38,6 @@ public class User {
     @NotEmpty
     @Size(min = 4)
     private String password;
-
-//    /**
-//     * Пароль для сверка с веденным паролем
-//     */
-//    @NotEmpty
-//    @Transient
-//    private String passwordConfirm;
-
     /**
      * email пользователя
      */

@@ -44,9 +44,17 @@ public class UserServiceImpl implements UserService {
     public User saveUser(User user) {
 //        final User user = mapper.map(dto);
 //        final User result = userRepository.save(user);
-        user.setUserName(user.getUserName());
-        user.setEmail(user.getEmail());
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+//        user = userRepository.findByEmail(user.getEmail());
+//
+//        if (user == null) {
+//            return new User();
+//        }
+//
+//        Set<Role> role = new HashSet<>();
+//        role.add(roleRepository.findByName(Roles.ROLE_USER));
+//        user.setRoles(role);
+//
+//        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

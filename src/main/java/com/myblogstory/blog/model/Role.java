@@ -1,6 +1,8 @@
 package com.myblogstory.blog.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -11,7 +13,9 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "role")
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "roles")
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
