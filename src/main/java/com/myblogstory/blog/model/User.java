@@ -38,9 +38,11 @@ public class User {
     @NotEmpty
     @Size(min = 4)
     private String password;
+
     /**
      * email пользователя
      */
+    @Email
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)

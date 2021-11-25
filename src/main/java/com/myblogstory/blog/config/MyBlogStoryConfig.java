@@ -60,6 +60,7 @@ public class MyBlogStoryConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(jwtAuthEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
-                .authorizeRequests().antMatchers("/auth/**").permitAll();
+                .authorizeRequests().antMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated();
     }
 }

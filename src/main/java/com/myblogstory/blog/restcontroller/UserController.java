@@ -7,33 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
-/**
- * Контроллер для регистрации и авторизации пользователя
- */
-
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/user")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     private final UserServiceImpl userServiceImpl;
-
-    /**
-     * Сохранить пользователя
-     * @param user
-     * @return
-     */
-    @PostMapping("/registration")
-    @ResponseStatus(HttpStatus.CREATED)
-    public User addEmployee(@RequestBody @Valid User user) {
-        return userServiceImpl.saveUser(user);
-//        public UserDto addEmployee(@RequestBody @Valid UserDto userDto) {
-//            return userServiceImpl.saveUser(userDto);
-    }
 
     /**
      * Найти всех пользователей

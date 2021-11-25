@@ -18,10 +18,10 @@ public interface UserService {
     List<User> findAll();
 
     /**
-     * @param user - user identification
+     * @param userDto - user identification
      * @return сохраненного пользователя
      */
-    User saveUser(User user);
+    UserDto saveUser(UserDto userDto);
 
 //    UserDto saveUser(UserDto user);
 

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Контроллер для работы с дынными базы данных, идентичен {@link UserController} class
+ * Контроллер для работы с дынными базы данных, идентичен {@link AuthController} class
  * @author Н.Черненко
  */
 

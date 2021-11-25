@@ -1,7 +1,7 @@
 package com.myblogstory.blog.model.dto;
 
+import com.myblogstory.blog.model.Roles;
 import lombok.Data;
-import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -23,6 +23,6 @@ public class UserDto {
 
     @Email
     private String email;
-
     private String[] roles;
+    private Roles name;
 }
