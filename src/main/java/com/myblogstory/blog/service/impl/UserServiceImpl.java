@@ -2,7 +2,6 @@ package com.myblogstory.blog.service.impl;
 
 //import com.myblogstory.blog.mapper.UserMapper;
 import com.myblogstory.blog.model.Role;
-import com.myblogstory.blog.model.Roles;
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.UserDto;
 import com.myblogstory.blog.repository.RoleRepository;
@@ -43,36 +42,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto saveUser(UserDto userDto) {
-
-        UserDto returnValue = new UserDto();
+    public User saveUser(User user) {
         User users = new User();
 
         //Проверка существует ли пользователь
-        User existingUser = this.findByUserName(userDto.getEmail());
+        User existingUser = this.findByUserName(user.getEmail());
 
         if (existingUser != null) {
             throw new UsernameNotFoundException ("Данные данного пользователя уже существуют");
         }
 
         //Создать безопасный пароль
-        userDto.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-        BeanUtils.copyProperties(userDto, users);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        BeanUtils.copyProperties(user, users);
 
         //Просвоение роли
-        Set<Role> roles = new HashSet<>();
-        String[] roleArr = userDto.getRoles();
-
-        if(roleArr == null) {
-            roles.add(roleRepository.findByName(Roles.ROLE_USER));
-        }
-        users.setRoles(roles);
+        Role userRole = roleRepository.findByName("ROLE_USER");
+        users.setRoles(userRole);
 
         //Запись данных в БД
 //        final User user = mapper.map(userDto);
-        final User result = userRepository.save(users);
-        BeanUtils.copyProperties(result, returnValue);
-        return returnValue;
+        return  userRepository.save(users);
     }
 
     @Override
@@ -91,5 +81,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUserName(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User findByEmailAndPassword(String email, String password) {
+        User user = findByUserName(email);
+        if (user != null) {
+            if (bCryptPasswordEncoder.matches(password, user.getPassword())) {
+                return user;
+            }
+        }
+        return null;
     }
 }

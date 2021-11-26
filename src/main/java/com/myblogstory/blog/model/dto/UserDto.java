@@ -1,6 +1,5 @@
 package com.myblogstory.blog.model.dto;
 
-import com.myblogstory.blog.model.Roles;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
@@ -23,6 +22,4 @@ public class UserDto {
 
     @Email
     private String email;
-    private String[] roles;
-    private Roles name;
 }

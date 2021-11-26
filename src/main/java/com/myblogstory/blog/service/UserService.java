@@ -18,10 +18,10 @@ public interface UserService {
     List<User> findAll();
 
     /**
-     * @param userDto - user identification
+     * @param user - user identification
      * @return сохраненного пользователя
      */
-    UserDto saveUser(UserDto userDto);
+    User saveUser(User user);
 
 //    UserDto saveUser(UserDto user);
 
@@ -43,5 +43,7 @@ public interface UserService {
      * @return пользователя по имени
      */
     User findByUserName(String userName);
+
+    User findByEmailAndPassword(String email, String password);
 
 }

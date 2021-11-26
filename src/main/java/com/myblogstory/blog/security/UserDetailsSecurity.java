@@ -34,12 +34,6 @@ public class UserDetailsSecurity implements UserDetailsService {
             throw new UsernameNotFoundException(String.format("User '%s' не найден", userName));
         }
 
-        Set<GrantedAuthority> grantedAuthorities = new HashSet< >();
-        for (Role role: user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName().name()));
-        }
-
-        return new org.springframework.security.core.userdetails.User(user.getUserName(),
-                user.getPassword(), grantedAuthorities);
+        return CustomUserDetails.fromUserEntityToCustomUserDetails(user);
     }
 }

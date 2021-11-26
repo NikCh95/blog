@@ -1,19 +1,15 @@
 package com.myblogstory.blog.restcontroller;
 
+import com.myblogstory.blog.config.jwt.JwtProvider;
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.UserDto;
 import com.myblogstory.blog.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Контроллер для регистрации и авторизации пользователя
@@ -26,27 +22,30 @@ import java.util.List;
 public class AuthController {
 
     private final UserServiceImpl userServiceImpl;
-    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
     /**
      * Сохранить пользователя
-     * @param userDto
+     * @param registrationRequest
      * @return
      */
     @PostMapping("/registration")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDto addEmployee(@RequestBody @Valid UserDto userDto) {
-        return userServiceImpl.saveUser(userDto);
+    public String registerUser(@RequestBody @Valid RegistrationRequest registrationRequest) {
+        User user = new User();
+        user.setPassword(registrationRequest.getPassword());
+        user.setEmail(registrationRequest.getEmail());
+        user.setUserName(registrationRequest.getUserName());
+        userServiceImpl.saveUser(user);
+        return "OK";
     }
 
     /**
      * Авторизация пользователя
      */
     @PostMapping("/authorization")
-    public User userLogin(@Valid @RequestBody User user) {
-        Authentication authentication = authenticationManager.
-                authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return (User) authentication;
+    public AuthResponse auth(@RequestBody AuthRequest request) {
+        User user = userServiceImpl.findByEmailAndPassword(request.getEmail(), request.getPassword());
+        String token = jwtProvider.generateToken(user.getEmail());
+        return new AuthResponse(token);
     }
 }

@@ -1,6 +1,6 @@
 package com.myblogstory.blog.config;
 
-import com.myblogstory.blog.security.JwtAuthEntryPoint;
+import com.myblogstory.blog.config.jwt.JwtFilter;
 import com.myblogstory.blog.security.UserDetailsSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +13,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Class конфигурации по настройке прав доступа и хешированию пароля
+ *
  * @author Н.Черненко
  */
 
@@ -25,9 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class MyBlogStoryConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsSecurity userDetailsSecurity;
-
-    private final JwtAuthEntryPoint jwtAuthEntryPoint;
-
+    private final JwtFilter jwtFilter;
 
 
     @Override
@@ -56,11 +56,12 @@ public class MyBlogStoryConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http .cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthEntryPoint).and()
+        http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests().antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
