@@ -1,14 +1,16 @@
 package com.myblogstory.blog.service.impl;
 
 //import com.myblogstory.blog.mapper.UserMapper;
+
 import com.myblogstory.blog.model.Role;
+import com.myblogstory.blog.model.Roles;
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.UserDto;
 import com.myblogstory.blog.repository.RoleRepository;
 import com.myblogstory.blog.repository.UserRepository;
 import com.myblogstory.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,27 +44,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
-        User users = new User();
+    public ResponseEntity<String> saveUser(UserDto userDto) {
+        User user = new User();
+        Set<Role> roles = new HashSet<>();
 
         //Проверка существует ли пользователь
-        User existingUser = this.findByUserName(user.getEmail());
+        User existingUser = this.findByUserName(userDto.getEmail());
 
         if (existingUser != null) {
             throw new UsernameNotFoundException ("Данные данного пользователя уже существуют");
         }
 
-        //Создать безопасный пароль
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        BeanUtils.copyProperties(user, users);
+        user.setUserName(userDto.getUserName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
 
-        //Просвоение роли
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        users.setRoles(userRole);
+        //Роли
+        String[] roleArr =userDto.getRoles();
 
-        //Запись данных в БД
-//        final User user = mapper.map(userDto);
-        return  userRepository.save(users);
+        if(roleArr == null) {
+            roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
+        }
+        for(String role: roleArr) {
+            switch(role) {
+                case "admin":
+                    roles.add(roleRepository.findByRoleName(Roles.ROLE_ADMIN).get());
+                    break;
+                case "user":
+                    roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Указанная роль не найдена");
+            }
+        }
+        user.setRoles(roles);
+        userRepository.save(user);
+        return ResponseEntity.ok("Пользователь успешно зарегистрировался");
     }
 
     @Override

@@ -1,56 +1,66 @@
 package com.myblogstory.blog.config.jwt;
 
 
-import com.myblogstory.blog.security.CustomUserDetails;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static io.jsonwebtoken.lang.Strings.hasText;
 
 /**
  * Класс фильтр
+ *
  * @author Н.Черненко
  */
 
 @Log
 @Component
+@AllArgsConstructor
 @RequiredArgsConstructor
-public class JwtFilter extends GenericFilterBean {
+public class JwtFilter extends OncePerRequestFilter {
 
-    public static final String AUTHORIZATION = "Authorization";
-    private final JwtProvider jwtProvider;
-    private final UserDetailsService userDetailsService;
+    private JwtProvider jwtProvider;
+    private UserDetailsService userDetailsService;
+
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
-                           FilterChain filterChain) throws IOException, ServletException {
-        logger.info("сделать фильтр ...");
-        String token = getTokenFromRequest((HttpServletRequest) servletRequest);
-        if (token != null && jwtProvider.validateToken(token)) {
-            String userEmail = jwtProvider.getEmailFromToken(token);
-            CustomUserDetails customUserDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(userEmail);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        try {
+            String token = getTokenFromRequest(request);
+
+            if (token != null && jwtProvider.validateToken(token)) {
+                String email = jwtProvider.getEmailFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Невозможно установить аутентификацию пользователя" + e.getMessage());
         }
-        filterChain.doFilter(servletRequest, servletResponse);
+        filterChain.doFilter(request, response);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        String bearer = request.getHeader(AUTHORIZATION);
-        if (hasText(bearer) && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
+        String token = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(token) && token.startsWith("Предявитель")) {
+            return token.substring(7, token.length());
         }
         return null;
     }

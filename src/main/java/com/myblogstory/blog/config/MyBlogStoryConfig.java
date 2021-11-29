@@ -1,5 +1,6 @@
 package com.myblogstory.blog.config;
 
+import com.myblogstory.blog.config.jwt.JwtAuthenticationEntryPoint;
 import com.myblogstory.blog.config.jwt.JwtFilter;
 import com.myblogstory.blog.security.UserDetailsSecurity;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +28,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class MyBlogStoryConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsSecurity userDetailsSecurity;
-    private final JwtFilter jwtFilter;
-
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsSecurity);
+        auth.userDetailsService(userDetailsSecurity).passwordEncoder(passwordEncoder());
     }
 
     @Autowired
@@ -54,14 +54,19 @@ public class MyBlogStoryConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
+    public JwtFilter jwtFilter() {
+        return new JwtFilter();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests().antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().authenticated();
+
+        http.addFilterBefore(jwtFilter(),UsernamePasswordAuthenticationFilter.class);
     }
 }

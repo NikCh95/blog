@@ -2,6 +2,7 @@ package com.myblogstory.blog.service;
 
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.UserDto;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -18,10 +19,10 @@ public interface UserService {
     List<User> findAll();
 
     /**
-     * @param user - user identification
+     * @param userDto - user identification
      * @return сохраненного пользователя
      */
-    User saveUser(User user);
+    ResponseEntity<String> saveUser(UserDto userDto);
 
 //    UserDto saveUser(UserDto user);
 

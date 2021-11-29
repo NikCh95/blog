@@ -7,13 +7,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 /**
- * Класс передачи данных
+ * Класс сбора данных, которые отправляются при регистрации нового пользователя
+ * @author Н.Черненко
  */
 
 @Data
 public class UserDto {
 
-    private Long id;
     private String userName;
 
     @NotEmpty
@@ -22,4 +22,6 @@ public class UserDto {
 
     @Email
     private String email;
+
+    private String[] roles;
 }

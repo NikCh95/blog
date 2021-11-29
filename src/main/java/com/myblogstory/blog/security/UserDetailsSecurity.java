@@ -1,19 +1,13 @@
 package com.myblogstory.blog.security;
 
-import com.myblogstory.blog.model.Role;
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Подключение {@link UserDetailsService} interface для настройки SpringSecurity

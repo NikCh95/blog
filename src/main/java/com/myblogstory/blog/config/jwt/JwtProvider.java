@@ -1,12 +1,12 @@
 package com.myblogstory.blog.config.jwt;
 
+import com.myblogstory.blog.security.CustomUserDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -18,30 +18,34 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-    @Value("$(jwt.secret)")
+    @Value("${jwt.secret}")
     private String jwtSecret;
+
+    @Value("${jwt.expiration}")
+    private long jwtTokenExpiration;
 
     /**
      *  Метод на вход которого будет приходить email пользователя, а на выходе будет строка jwt.
-     *  Jwts.builder() конструкцию которая позволяет создать этот самый токен. в setSubject  добавлен email пользователя,
+     *  Jwt.builder() конструкцию которая позволяет создать этот самый токен. в setSubject  добавлен email пользователя,
      *  чтобы потом его оттуда забрать в фильтре, когда пользователь будет делать запрос.
-     *  setExpiration — указанно 15 дней.
-     *  В случае если пройдет 15 дней и токен не обновить — будет выброшено сообщение об ошибке в методе {validateToken},
-     *  который будет описан ниже. signWith — принимает на вход алгоритм подписи и кодовое слово,
+     *  signWith — принимает на вход алгоритм подписи и кодовое слово,
      *  которое потом потребуется для расшифровки.
      */
-    public String generateToken(String email) {
-        Date date = Date.from(LocalDate.now().plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant());
+    public String generateJwtToken(Authentication authentication) {
+        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
         return Jwts.builder()
-                .setSubject(email)
-                .setExpiration(date)
+                .setSubject(userPrincipal.getEmail())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtTokenExpiration))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
             log.severe("Срок действия токена истек");
@@ -61,7 +65,10 @@ public class JwtProvider {
      *Получить информацию о email пользователя
      */
     public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody();
         return claims.getSubject();
     }
 }
