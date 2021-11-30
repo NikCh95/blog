@@ -23,9 +23,20 @@ public class User {
     private Long id;
 
     /**
-     * имя пользователя
+     * имя
      */
     private String userName;
+
+    /**
+     * Фамилия
+     */
+    private String lastName;
+
+    /**
+     * Отчество
+     */
+    private String patronymic;
+
 
     /**
      * Пароль для авторизации пользователя
