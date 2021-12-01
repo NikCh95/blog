@@ -10,6 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Класс обрабатывает исключения и отправляет в качестве ответа 401 ошибку,
+ * указывающий, что запрос требует HTTP - аутентификации.
+ * @author Н.Черненко
+ */
+
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 

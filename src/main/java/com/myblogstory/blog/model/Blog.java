@@ -1,8 +1,6 @@
 package com.myblogstory.blog.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -21,13 +19,19 @@ public class Blog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Заголовок статьи
+    /**
+     * Заголовок
+     */
     private String name;
 
-    // Основной текст статьи
+    /**
+     * Основной текст
+     */
     private String text;
 
-    // Время публикации
+    /**
+     * Время публикации
+     */
     private Date data;
 
     @OneToOne

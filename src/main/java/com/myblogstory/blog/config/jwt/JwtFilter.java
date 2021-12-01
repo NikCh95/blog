@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = request.getHeader("Authorization");
 
         if (StringUtils.hasText(token) && token.startsWith("Предявитель")) {
-            return token.substring(7, token.length());
+            return token.substring(7);
         }
         return null;
     }
