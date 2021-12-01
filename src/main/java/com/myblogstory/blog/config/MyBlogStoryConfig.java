@@ -66,7 +66,7 @@ public class MyBlogStoryConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 
                 .authorizeRequests().antMatchers("/auth/registration", "/auth/authorization").permitAll()
-                .antMatchers(HttpMethod.GET, "/questionnaire", "/blog-list").authenticated();
+                .antMatchers(HttpMethod.GET, "/user/**").permitAll();
 
         http.addFilterBefore(jwtFilter(),UsernamePasswordAuthenticationFilter.class);
     }

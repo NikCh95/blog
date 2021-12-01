@@ -30,7 +30,7 @@ public class UserController {
      * Найти пользователя по id
      * @param id
      */
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public User getByUserId(@PathVariable("id") Long id) {
         return userServiceImpl.getByIdUser(id);
     }
@@ -41,7 +41,11 @@ public class UserController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) {
-        userServiceImpl.deleteUser(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            userServiceImpl.deleteUser(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

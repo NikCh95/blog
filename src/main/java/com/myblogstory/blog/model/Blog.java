@@ -29,4 +29,10 @@ public class Blog {
 
     // Время публикации
     private Date data;
+
+    @OneToOne
+    @JoinTable(name = "blogs_users",
+            joinColumns = @JoinColumn(name="blogs_id", referencedColumnName="id"),
+            inverseJoinColumns = @JoinColumn(name="users_id", referencedColumnName="id"))
+    private User users;
 }
