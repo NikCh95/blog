@@ -56,7 +56,7 @@ public class JwtProvider {
         } catch (SignatureException sEx) {
             log.severe("Неверная подпись");
         } catch (Exception e) {
-            log.severe("недействительный токен");
+            log.severe("Недействительный токен");
         }
         return false;
     }

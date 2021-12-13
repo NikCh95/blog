@@ -1,42 +1,39 @@
 package com.myblogstory.blog.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * Класс описания полей для создания сущности в БД
  * @author Н.Черненко
  */
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "blogs")
-public class Blog {
+@Table(name = "t_blogs")
+public class Blog extends AuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Заголовок
-     */
+    // Заголовок статьи
     private String name;
 
-    /**
-     * Основной текст
-     */
+    // Основной текст статьи
     private String text;
 
-    /**
-     * Время публикации
-     */
-    private Date data;
+    // Время публикации
+    private LocalDate data  = LocalDate.now();
 
-    @OneToOne
-    @JoinTable(name = "blogs_users",
-            joinColumns = @JoinColumn(name="blogs_id", referencedColumnName="id"),
-            inverseJoinColumns = @JoinColumn(name="users_id", referencedColumnName="id"))
-    private User users;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "blogs_id")
+    @JsonIgnoreProperties("blogs")
+    private User user;
 }

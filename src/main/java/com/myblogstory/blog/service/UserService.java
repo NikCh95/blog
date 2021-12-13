@@ -16,7 +16,7 @@ public interface UserService {
     /**
      * @return всех пользователей
      */
-    List<User> findAll();
+    List<User> findAllUsers();
 
     /**
      * @param userDto - user identification
@@ -24,13 +24,16 @@ public interface UserService {
      */
     ResponseEntity<String> saveUser(UserDto userDto);
 
-//    UserDto saveUser(UserDto user);
-
     /**
      * @param id - user identification
      * @return пользователя по id
      */
     User getByIdUser(Long id);
+
+    /**
+     *  Изменить данные пользователя
+     */
+    void updateUser(User user);
 
     /**
      * удалить пользователя

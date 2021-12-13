@@ -2,6 +2,7 @@ package com.myblogstory.blog.service.impl;
 
 //import com.myblogstory.blog.mapper.UserMapper;
 
+import com.myblogstory.blog.model.Blog;
 import com.myblogstory.blog.model.Role;
 import com.myblogstory.blog.model.Roles;
 import com.myblogstory.blog.model.User;
@@ -14,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,26 +30,18 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-//
+
 //    private  final UserMapper mapper;
 
     private final UserRepository userRepository;
-
     private final RoleRepository roleRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-
-
-    @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
 
     @Override
     public ResponseEntity<String> saveUser(UserDto userDto) {
         User user = new User();
         Set<Role> roles = new HashSet<>();
+        Set<Blog> blogs = new HashSet<>();
 
         //Проверка существует ли пользователь
         User existingUser = this.findByUserName(userDto.getEmail());
@@ -65,6 +60,7 @@ public class UserServiceImpl implements UserService {
         if(roleArr == null) {
             roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
         }
+
         for(String role: roleArr) {
             switch(role) {
                 case "admin":
@@ -78,13 +74,28 @@ public class UserServiceImpl implements UserService {
             }
         }
         user.setRoles(roles);
-        userRepository.save(user);
+        user.setBlogs(blogs);
+        User saveUser = userRepository.save(user);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(saveUser.getId()).toUri();
+        ResponseEntity.created(location).body(saveUser);
         return ResponseEntity.ok("Пользователь успешно зарегистрировался");
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override
     public User getByIdUser(Long id) {
         return userRepository.getById(id);
+    }
+
+    @Override
+    public void updateUser(User user) {
+        User userDB = userRepository.findById(user.getId()).orElseThrow();
+        userRepository.save(userDB);
     }
 
     @Override
@@ -94,6 +105,10 @@ public class UserServiceImpl implements UserService {
         }
         throw new UsernameNotFoundException("Пользователь не найден");
     }
+
+    /**
+     * (findByUserName and findByEmailAndPassword) - методы необходимые для UserDetailsService
+     */
 
     @Override
     public User findByUserName(String email) {

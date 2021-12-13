@@ -8,10 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -23,29 +24,34 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<User> getAllUsers() {
-        return userServiceImpl.findAll();
+        return userServiceImpl.findAllUsers();
     }
 
     /**
      * Найти пользователя по id
-     * @param id
      */
-    @GetMapping("{id}")
+    @GetMapping(value = "/{id}")
     public User getByUserId(@PathVariable("id") Long id) {
         return userServiceImpl.getByIdUser(id);
     }
 
+    @PutMapping("/updateUser")
+    public ResponseEntity<String> updateUser(@RequestBody User user) {
+        try {
+            userServiceImpl.updateUser(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NoSuchElementException ex) {
+            System.out.println(ex.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     /**
      * Удалить пользователя
-     * @param id
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") Long id) {
-        try {
-            userServiceImpl.deleteUser(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (RuntimeException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        userServiceImpl.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

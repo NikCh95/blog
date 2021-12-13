@@ -2,17 +2,22 @@ package com.myblogstory.blog.restcontroller;
 
 
 import com.myblogstory.blog.model.Blog;
+import com.myblogstory.blog.model.dto.BlogDto;
+import com.myblogstory.blog.repository.BlogRepository;
 import com.myblogstory.blog.service.impl.BlogServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * Контроллер для работы с дынными базы данных, идентичен {@link AuthController} class
+ *
  * @author Н.Черненко
  */
 
@@ -23,41 +28,24 @@ import java.util.NoSuchElementException;
 public class BlogController {
 
     private final BlogServiceImpl blogService;
+    private final BlogRepository blogRepository;
 
-
+    /**
+     * Добавить статью в базу данных
+     * @return
+     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Blog addBlog(@RequestBody Blog blog) {
-        return blogService.saveBlog(blog);
+    public ResponseEntity<Blog> addBlog(@RequestBody @Valid BlogDto blogDto) {
+        Blog blog =  blogService.saveBlog(blogDto);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}")
+                .buildAndExpand(blog.getId()).toUri();
+        return ResponseEntity.created(location).body(blog);
     }
 
     @GetMapping
-    public List<Blog> getAllBlogs() {
+    @ResponseBody
+    public List<Blog> getAllPhotos() {
         return blogService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Blog getBlogById(@PathVariable("id") Long id) {
-        return blogService.getById(id);
-    }
-
-    @PutMapping("/upDateBlog")
-    public ResponseEntity<String> updateBlog(@RequestBody Blog blog) {
-        try {
-            blogService.updateBlog(blog);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NoSuchElementException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBlog(@PathVariable Long id) {
-        try {
-            blogService.deleteBlog(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (RuntimeException ex) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 }

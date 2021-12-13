@@ -1,5 +1,6 @@
 package com.myblogstory.blog.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,8 +16,8 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "t_users")
+public class User extends AuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +56,9 @@ public class User {
             joinColumns = @JoinColumn(name="users_id", referencedColumnName="id"),
             inverseJoinColumns = @JoinColumn(name="roles_id", referencedColumnName="id"))
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("user")
+    private Set<Blog> blogs = new HashSet<>();
+
 }

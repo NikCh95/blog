@@ -37,8 +37,6 @@ public class AuthController {
 
     /**
      * Сохранить пользователя
-     * @param userDto
-     * @return
      */
     @PostMapping("/registration")
     public ResponseEntity<String> registerUser(@RequestBody @Valid UserDto userDto) {
