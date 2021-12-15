@@ -28,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
 
     public static CustomUserDetails fromUserEntityToCustomUserDetails(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
+                .map(role -> new SimpleGrantedAuthority(user.toString()))
                 .collect(Collectors.toList());
         return  new CustomUserDetails(user.getId(), user.getUserName(), user.getEmail(), user.getPassword(),
                 authorities);

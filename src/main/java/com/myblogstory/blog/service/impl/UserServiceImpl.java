@@ -3,10 +3,8 @@ package com.myblogstory.blog.service.impl;
 //import com.myblogstory.blog.mapper.UserMapper;
 
 import com.myblogstory.blog.model.Role;
-import com.myblogstory.blog.model.Roles;
 import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.UserDto;
-import com.myblogstory.blog.repository.RoleRepository;
 import com.myblogstory.blog.repository.UserRepository;
 import com.myblogstory.blog.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Имплементация {@link UserService} interface
@@ -33,17 +30,13 @@ public class UserServiceImpl implements UserService {
 //    private  final UserMapper mapper;
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public ResponseEntity<String> saveUser(UserDto userDto) {
         User user = new User();
-        Set<Role> roles = new HashSet<>();
 
-        //Проверка существует ли пользователь
         User existingUser = this.findByUserName(userDto.getEmail());
-
         if (existingUser != null) {
             throw new UsernameNotFoundException ("Данные данного пользователя уже существуют");
         }
@@ -53,27 +46,7 @@ public class UserServiceImpl implements UserService {
         user.setPatronymic(userDto.getPatronymic());
         user.setEmail(userDto.getEmail());
         user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
-
-        //Роли
-        String[] roleArr =userDto.getRoles();
-
-        if(roleArr == null) {
-            roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
-        }
-
-        for(String role: roleArr) {
-            switch(role) {
-                case "admin":
-                    roles.add(roleRepository.findByRoleName(Roles.ROLE_ADMIN).get());
-                    break;
-                case "user":
-                    roles.add(roleRepository.findByRoleName(Roles.ROLE_USER).get());
-                    break;
-                default:
-                    return ResponseEntity.badRequest().body("Указанная роль не найдена");
-            }
-        }
-        user.setRoles(roles);
+        user.setRoles(Collections.singleton(Role.USER));
         User addUser = userRepository.save(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(addUser.getId()).toUri();
