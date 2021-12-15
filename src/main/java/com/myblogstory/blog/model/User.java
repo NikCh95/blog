@@ -57,7 +57,7 @@ public class User extends AuditModel {
             inverseJoinColumns = @JoinColumn(name="roles_id", referencedColumnName="id"))
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("user")
     private Set<Blog> blogs = new HashSet<>();
 

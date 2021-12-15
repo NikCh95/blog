@@ -1,6 +1,5 @@
 package com.myblogstory.blog.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,17 +22,23 @@ public class Blog extends AuditModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Заголовок статьи
+    /**
+     * Заголовок статьи
+     */
     private String name;
 
-    // Основной текст статьи
+    /**
+     * Основной текст
+     */
     private String text;
 
-    // Время публикации
+    /**
+     * Время публикации
+     */
     private LocalDate data  = LocalDate.now();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "blogs_id")
+    @JoinColumn(name = "user_id", referencedColumnName="id", nullable = false)
     @JsonIgnoreProperties("blogs")
     private User user;
 }

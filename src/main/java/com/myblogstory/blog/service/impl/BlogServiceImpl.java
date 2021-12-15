@@ -1,12 +1,12 @@
 package com.myblogstory.blog.service.impl;
 
 import com.myblogstory.blog.model.Blog;
-import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.BlogDto;
 import com.myblogstory.blog.repository.BlogRepository;
 import com.myblogstory.blog.repository.UserRepository;
 import com.myblogstory.blog.service.BlogService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +29,9 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Blog saveBlog(BlogDto blogDto) {
         Blog blog = new Blog();
-
-
-        //Проверка существует запись
+        //Проверка записи
         Blog existingBlog = this.findByName(blogDto.getName());
-        if (existingBlog != null) {
+        if (existingBlog == null) {
             throw new UsernameNotFoundException("Данные отсутствуют");
         }
         blog.setName(blogDto.getName());
@@ -55,7 +53,8 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public void deleteBlog(Long id) {
-        blogRepository.getById(id);
+        blogRepository.findById(id);
+        blogRepository.deleteById(id);o
     }
 
     @Override
@@ -64,7 +63,6 @@ public class BlogServiceImpl implements BlogService {
         blogRepository.save(blogs);
     }
 
-    @Override
     public Blog findByName(String name) {
         return blogRepository.findByName(name);
     }

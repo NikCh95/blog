@@ -1,8 +1,8 @@
 package com.myblogstory.blog.service;
 
 import com.myblogstory.blog.model.Blog;
-import com.myblogstory.blog.model.User;
 import com.myblogstory.blog.model.dto.BlogDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,6 +30,7 @@ public interface BlogService {
 
     /**
      * Удалить данные из базы данных
+     * @return
      */
     void deleteBlog(Long id);
 
@@ -37,8 +38,5 @@ public interface BlogService {
      * изменить данные
      */
     void updateBlog(Blog blog);
-
-    Blog findByName(String name);
-
 
 }

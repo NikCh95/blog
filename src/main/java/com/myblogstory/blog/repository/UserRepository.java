@@ -4,6 +4,8 @@ import com.myblogstory.blog.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * Подключение модуля SpringJPA для {@link User} class
  * @author Н.Черненко

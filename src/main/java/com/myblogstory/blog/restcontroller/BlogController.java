@@ -28,7 +28,6 @@ import java.util.List;
 public class BlogController {
 
     private final BlogServiceImpl blogService;
-    private final BlogRepository blogRepository;
 
     /**
      * Добавить статью в базу данных
@@ -36,16 +35,20 @@ public class BlogController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Blog> addBlog(@RequestBody @Valid BlogDto blogDto) {
-        Blog blog =  blogService.saveBlog(blogDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userId}")
-                .buildAndExpand(blog.getId()).toUri();
-        return ResponseEntity.created(location).body(blog);
+    public Blog addBlog(@RequestBody @Valid BlogDto blogDto) {
+        return blogService.saveBlog(blogDto);
     }
 
     @GetMapping
-    @ResponseBody
+    @ResponseBody()
+    @ResponseStatus(HttpStatus.OK)
     public List<Blog> getAllPhotos() {
         return blogService.findAll();
     }
+
+    @DeleteMapping
+    public void deleteBlogId(@PathVariable Long id) {
+        blogService.deleteBlog(id);
+    }
+
 }

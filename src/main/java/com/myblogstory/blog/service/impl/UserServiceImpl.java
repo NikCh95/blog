@@ -2,7 +2,6 @@ package com.myblogstory.blog.service.impl;
 
 //import com.myblogstory.blog.mapper.UserMapper;
 
-import com.myblogstory.blog.model.Blog;
 import com.myblogstory.blog.model.Role;
 import com.myblogstory.blog.model.Roles;
 import com.myblogstory.blog.model.User;
@@ -41,7 +40,6 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<String> saveUser(UserDto userDto) {
         User user = new User();
         Set<Role> roles = new HashSet<>();
-        Set<Blog> blogs = new HashSet<>();
 
         //Проверка существует ли пользователь
         User existingUser = this.findByUserName(userDto.getEmail());
@@ -51,6 +49,8 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setUserName(userDto.getUserName());
+        user.setLastName(userDto.getLastName());
+        user.setPatronymic(userDto.getPatronymic());
         user.setEmail(userDto.getEmail());
         user.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
 
@@ -74,11 +74,10 @@ public class UserServiceImpl implements UserService {
             }
         }
         user.setRoles(roles);
-        user.setBlogs(blogs);
-        User saveUser = userRepository.save(user);
+        User addUser = userRepository.save(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(saveUser.getId()).toUri();
-        ResponseEntity.created(location).body(saveUser);
+                .buildAndExpand(addUser.getId()).toUri();
+        ResponseEntity.created(location).body(addUser);
         return ResponseEntity.ok("Пользователь успешно зарегистрировался");
     }
 
